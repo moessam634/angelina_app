@@ -1,0 +1,4 @@
+enum ProductCardType {
+  cart,
+  favorite,
+}
