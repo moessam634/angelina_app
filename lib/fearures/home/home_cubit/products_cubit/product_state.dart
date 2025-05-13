@@ -1,5 +1,4 @@
 import 'package:angelinashop/fearures/home/model/models/products_model.dart';
-import 'package:equatable/equatable.dart';
 
 sealed class ProductsState  {}
 

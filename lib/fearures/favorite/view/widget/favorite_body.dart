@@ -1,3 +1,4 @@
+import 'package:angelinashop/core/helper/navigation_helper.dart';
 import 'package:angelinashop/core/styles/colors_app.dart';
 import 'package:angelinashop/core/styles/image_app.dart';
 import 'package:angelinashop/core/utils/enums.dart';
@@ -7,6 +8,7 @@ import 'package:angelinashop/core/widgets/custom_text_form_field.dart';
 import 'package:angelinashop/fearures/cart/cubit/cart_cubit.dart';
 import 'package:angelinashop/fearures/cart/model/model/cart_model.dart';
 import 'package:angelinashop/fearures/favorite/cubit/favorite_cubit.dart';
+import 'package:angelinashop/fearures/product_details/view/screen/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,7 +53,6 @@ class _FavoriteBodyState extends State<FavoriteBody> {
           } else if (state is FavoriteLoaded) {
             final filtered = state.filteredFavorites;
             final query = state.searchQuery;
-
             return Column(
               children: [
                 CustomTextFormField(
@@ -71,58 +72,75 @@ class _FavoriteBodyState extends State<FavoriteBody> {
                   prefixIcon: Icon(Icons.search, color: ColorsApp.kThirdColor),
                 ),
                 SizedBox(height: 25.h),
-
-                // === CONDITIONAL BODY ===
                 Expanded(
                   child: filtered.isEmpty
                       ? Center(
-                    child: Text(
-                      query.isNotEmpty
-                          ? "هذا المنتج غير موجود فى المفضله"
-                          : "لا توجد عناصر مفضلة",
-                      style: TextStyles.k22.copyWith(color: ColorsApp.kPrimaryColor),
-                    ),
-                  )
+                          child: Text(
+                            query.isNotEmpty
+                                ? "هذا المنتج غير موجود فى المفضله"
+                                : "لا توجد عناصر مفضلة",
+                            style: TextStyles.k22
+                                .copyWith(color: ColorsApp.kPrimaryColor),
+                          ),
+                        )
                       : ListView.separated(
-                    itemCount: filtered.length,
-                    separatorBuilder: (_, __) => SizedBox(height: 14.h),
-                    itemBuilder: (context, index) {
-                      final item = filtered[index];
-                      final isFav = context.read<FavoriteCubit>().isFavorite(item.id!);
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, __) => SizedBox(height: 14.h),
+                          itemBuilder: (context, index) {
+                            final item = filtered[index];
+                            final isFav = context
+                                .read<FavoriteCubit>()
+                                .isFavorite(item.id!);
 
-                      return CustomHorizontalProductItem(
-                        productCardType: ProductCardType.favorite,
-                        productFavoritePriceSection: CustomClickableIcon(
-                          icon: ImageApp.shoppingCartIcon,
-                          color: ColorsApp.kPrimaryColor,
-                          iconColor: Colors.white,
-                          width: 36.w,
-                          height: 36.h,
-                          onPressed: () async {
-                            await context.read<CartCubit>().addItem(
-                              CartItemModel(product: item, quantity: 1),
+                            return CustomHorizontalProductItem(
+                              onTap: () {
+                                NavigationHelper.push(
+                                    context: context,
+                                    destination:
+                                        ProductDetailsScreen(model: item));
+                              },
+                              productCardType: ProductCardType.favorite,
+                              productFavoritePriceSection: CustomClickableIcon(
+                                icon: ImageApp.shoppingCartIcon,
+                                color: ColorsApp.kPrimaryColor,
+                                iconColor: Colors.white,
+                                width: 36.w,
+                                height: 36.h,
+                                onPressed: () async {
+                                  await context.read<CartCubit>().addItem(
+                                        CartItemModel(
+                                            product: item, quantity: 1),
+                                      );
+                                  await context
+                                      .read<FavoriteCubit>()
+                                      .toggleFavorite(item);
+                                  customSnackBar(
+                                      context: context,
+                                      text: "تمت الإضافة إلى السلة");
+                                },
+                              ),
+                              title: item.name ?? '',
+                              price: '\$${item.price}',
+                              image: item.images?.first.src ?? '',
+                              rate: item.ratingCount?.toString() ?? '4.5',
+                              onFavPressed: () {
+                                context
+                                    .read<FavoriteCubit>()
+                                    .toggleFavorite(item);
+                                setState(() {});
+                              },
+                              iconColor: isFav
+                                  ? ImageApp.filledHeartIcon
+                                  : ImageApp.heartIcon,
+                              onDelete: () {
+                                context
+                                    .read<FavoriteCubit>()
+                                    .toggleFavorite(item);
+                              },
                             );
-                            await context.read<FavoriteCubit>().toggleFavorite(item);
-                            customSnackBar(context: context, text: "تمت الإضافة إلى السلة");
                           },
                         ),
-                        title: item.name ?? '',
-                        price: '\$${item.price}',
-                        image: item.images?.first.src ?? '',
-                        rate: item.ratingCount?.toString() ?? '4.5',
-                        onFavPressed: () {
-                          context.read<FavoriteCubit>().toggleFavorite(item);
-                          setState(() {});
-                        },
-                        iconColor: isFav ? ImageApp.filledHeartIcon : ImageApp.heartIcon,
-                        onDelete: () {
-                          context.read<FavoriteCubit>().toggleFavorite(item);
-                        },
-                      );
-                    },
-                  ),
                 ),
-
                 if (filtered.isNotEmpty)
                   CustomButton(
                     text: "اضافه الى السله",
@@ -130,16 +148,14 @@ class _FavoriteBodyState extends State<FavoriteBody> {
                     onTap: () async {
                       await context.read<FavoriteCubit>().addFavoritesToCart();
                       await context.read<FavoriteCubit>().clearFavorites();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("تمت الإضافة إلى السلة")),
-                      );
+                      customSnackBar(
+                          context: context, text: "تمت الإضافة إلى السلة");
                     },
                     style: TextStyles.k16.copyWith(color: Colors.white),
                   )
               ],
             );
-          }
-          else {
+          } else {
             return const SizedBox();
           }
         }),

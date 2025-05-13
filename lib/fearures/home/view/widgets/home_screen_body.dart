@@ -1,6 +1,7 @@
 import 'package:angelinashop/core/helper/navigation_helper.dart';
 import 'package:angelinashop/core/styles/image_app.dart';
 import 'package:angelinashop/core/styles/text_styles.dart';
+import 'package:angelinashop/core/utils/price_utils.dart';
 import 'package:angelinashop/fearures/home/home_cubit/categories_cubit/categories_cubit.dart';
 import 'package:angelinashop/fearures/home/home_cubit/categories_cubit/categories_state.dart';
 import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_cubit.dart';
@@ -68,8 +69,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return CustomCategoryItem(
-                            image: categories[index].image ??
-                                'https://farm3.staticflickr.com/2220/1572613671_7311098b76_z_d.jpg',
+                            image: categories[index].image ??ImageApp.categoryImage,
                             categoryName: categories[index].name ?? "No Name",
                             onTap: () {
                               context
@@ -136,6 +136,13 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         final isFav = context
                             .read<FavoriteCubit>()
                             .isFavorite(product.id!);
+                        final isDiscounted = PriceUtils.isTrulyDiscounted(
+                          price: product.price ?? '0',
+                          regularPrice: product.regularPrice ?? '0',
+                          salePrice: product.salePrice ?? '0',
+                          onSale: product.onSale ?? false,
+                        );
+
                         return Padding(
                           padding: EdgeInsets.symmetric(vertical: 5.w),
                           child: CustomProductCard(
@@ -143,6 +150,10 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                             title: product.name ?? "No Name",
                             price: product.price ?? "0.0",
                             oldPrice: product.regularPrice ?? "0.0",
+                            isDiscounted: isDiscounted,
+                            discountLabel: isDiscounted
+                                ? '${PriceUtils.calculateDiscountPercentage(product.price ?? '0', product.regularPrice ?? '0')}%'
+                                : null,
                             onIconPressed: () {
                               context
                                   .read<FavoriteCubit>()

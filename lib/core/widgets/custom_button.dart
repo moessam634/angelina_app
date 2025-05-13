@@ -67,7 +67,7 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.verticalPadding,
     this.horizontalPadding,
-    this.disabled = false, // Renamed from isDisabled for better naming convention
+    this.disabled = false,
   });
 
   final String text;
@@ -83,7 +83,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: disabled ? null : onTap, // Don't call onTap if disabled
+      onTap: disabled ? null : onTap,
       child: Container(
         width: width ?? double.infinity,
         height: height,

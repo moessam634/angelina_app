@@ -1,13 +1,14 @@
 import 'package:angelinashop/fearures/cart/view/screen/cart_screen.dart';
-import 'package:angelinashop/fearures/product_details/view/screen/product_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/styles/colors_app.dart';
 import '../../../../core/styles/image_app.dart';
 import '../../../../core/styles/text_styles.dart';
+import '../../../../core/utils/service_locator.dart';
 import '../../../favorite/view/screen/favorite_screen.dart';
 import '../../../home/view/screen/home_screen.dart';
+import '../../../profile/view/screen/profile_screen.dart';
 import '../../cubit/switcher_cubit.dart';
 import '../../cubit/switcher_state.dart';
 
@@ -29,27 +30,64 @@ Widget _buildIcon(String iconPath, int index, int currentIndex) {
 }
 
 class SwitcherScreenState extends State<SwitcherScreen> {
+  final PageController _controller = PageController();
   List<Widget> screens = const [
     HomeScreen(),
     FavoriteScreen(),
     CartScreen(),
-    // SizedBox(),
+    ProfileScreen(),
   ];
 
   @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
+  // @override
+  // Future<void> initState() async {
+  //   super.initState();
+  //   await sl<NotificationService>().showSimpleNotification(
+  //     title: 'Test Notification',
+  //     body: 'This is a test from foreground!',
+  //   );
+  //
+  //   await Workmanager().registerPeriodicTask(
+  //     "check-stock-sale-task",
+  //     notifyTask,
+  //     frequency: Duration(hours: 6),
+  //     initialDelay: Duration(minutes: 1),
+  //     backoffPolicy: BackoffPolicy.exponential,
+  //     constraints: Constraints(
+  //       networkType: NetworkType.connected, // Optional
+  //     ),
+  //   );
+  //
+  // }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => SwitcherCubit(),
+    return BlocProvider.value(
+      value: sl<SwitcherCubit>(),
       child: BlocBuilder<SwitcherCubit, SwitcherState>(
         builder: (context, state) {
-          SwitcherCubit switcherCubit = BlocProvider.of(context);
+          final switcherCubit = context.read<SwitcherCubit>();
           return Directionality(
             textDirection: TextDirection.rtl,
             child: Scaffold(
-              body: screens[switcherCubit.currentIndex],
+              body: PageView(
+                controller: _controller,
+                onPageChanged: (index) {
+                  switcherCubit.changeScreen(index);
+                },
+                children: screens,
+              ),
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: switcherCubit.currentIndex,
-                onTap: switcherCubit.changeScreen,
+                onTap: (index) {
+                  _controller.jumpToPage(index);
+                  switcherCubit.changeScreen(index);
+                },
                 backgroundColor: Colors.white,
                 type: BottomNavigationBarType.fixed,
                 showUnselectedLabels: true,
@@ -70,10 +108,10 @@ class SwitcherScreenState extends State<SwitcherScreen> {
                       icon: _buildIcon(ImageApp.shoppingCartIcon, 2,
                           switcherCubit.currentIndex),
                       label: "Cart"),
-                  // BottomNavigationBarItem(
-                  //     icon: _buildIcon(
-                  //         ImageApp.userIcon, 3, switcherCubit.currentIndex),
-                  //     label: "Profile"),
+                  BottomNavigationBarItem(
+                      icon: _buildIcon(
+                          ImageApp.userIcon, 3, switcherCubit.currentIndex),
+                      label: "Profile"),
                 ],
               ),
             ),

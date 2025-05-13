@@ -9,6 +9,9 @@ import '../../fearures/check_out/cubit/pay_mob_cubit/pay_mob__cubit.dart';
 import '../../fearures/check_out/model/data/check_out_data.dart';
 import '../../fearures/home/home_cubit/categories_cubit/categories_cubit.dart';
 import '../../fearures/home/model/data/home_data.dart';
+import '../../fearures/profile/cubit/order_history_cubit.dart';
+import '../../fearures/switcher/cubit/switcher_cubit.dart';
+import 'notification_service.dart';
 
 final sl = GetIt.instance;
 
@@ -19,16 +22,12 @@ void setupServiceLocator() {
   sl.registerLazySingleton(() => PaymobManager(sl()));
   sl.registerLazySingleton(() => ProductDetailsData(sl()));
   sl.registerLazySingleton(() => OrdersData(sl()));
+  sl.registerLazySingleton<SwitcherCubit>(() => SwitcherCubit());
 
   sl.registerFactory(() => CategoriesCubit(sl<HomeData>()));
   sl.registerFactory(() => ProductsCubit(sl<HomeData>()));
   sl.registerFactory(() => PayMobCubit(sl<PaymobManager>()));
   sl.registerFactory(() => ProductDetailsCubit(sl<ProductDetailsData>()));
   sl.registerFactory(() => CheckOutCubit(sl<OrdersData>()));
-  // sl.registerFactory(() => CartCubit());
+  sl.registerFactory(() => OrderHistoryCubit());
 }
-// sl.registerLazySingleton(() => CartData(sl()));
-// sl.registerLazySingleton(() => StorageHelper());
-// sl.registerFactory(() => FavoriteCubit(sl<>()));
-
-// sl.registerFactory(() => PaymentCubit(sl<PaymentData>()));

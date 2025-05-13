@@ -5,13 +5,12 @@ class OrdersModel {
   Billing? billing;
   List<LineItem>? lineItems;
 
-  OrdersModel({
-    this.paymentMethod,
-    this.paymentMethodTitle,
-    this.setPaid,
-    this.billing,
-    this.lineItems,
-  });
+  OrdersModel(
+      {this.paymentMethod,
+      this.paymentMethodTitle,
+      this.setPaid,
+      this.billing,
+      this.lineItems});
 
   factory OrdersModel.fromJson(Map<String, dynamic> json) => OrdersModel(
         paymentMethod: json["payment_method"],
@@ -34,7 +33,6 @@ class OrdersModel {
             ? []
             : List<dynamic>.from(lineItems!.map((x) => x.toJson())),
       };
-
 }
 
 class Billing {
@@ -48,6 +46,7 @@ class Billing {
   String? country;
   String? email;
   String? phone;
+
   // String? company;
 
   Billing({
@@ -91,7 +90,6 @@ class Billing {
         "phone": phone,
         // "company": company,
       };
-
 }
 
 class LineItem {

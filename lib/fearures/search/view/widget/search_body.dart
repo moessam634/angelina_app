@@ -29,14 +29,15 @@ class _SearchBodyState extends State<SearchBody> {
   void initState() {
     super.initState();
     controller.addListener(_onSearchChanged);
-    context.read<ProductsCubit>().getProduct();
   }
 
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 400), () {
+    _debounce = Timer(const Duration(milliseconds: 500), () {
       final query = controller.text.trim();
-      context.read<ProductsCubit>().searchProducts(query);
+      if (query.isNotEmpty) {
+        context.read<ProductsCubit>().searchProducts(query);
+      }
     });
   }
 
@@ -69,13 +70,24 @@ class _SearchBodyState extends State<SearchBody> {
                 keyboardType: TextInputType.text,
                 prefixIcon: Icon(Icons.search, color: ColorsApp.kThirdColor),
                 onChanged: (query) {
-                  context.read<ProductsCubit>().searchProducts(query);
+                  if (query.isNotEmpty) {
+                    context.read<ProductsCubit>().searchProducts(query);
+                  }
                 },
               ),
               SizedBox(height: 30.h),
               BlocBuilder<ProductsCubit, ProductsState>(
                 builder: (context, state) {
-                  if (state is ProductLoadingState) {
+                  if (controller.text.isEmpty) {
+                    return SizedBox(
+                      height: .5.sh,
+                      child: Center(
+                        child: Text("ابحث عن اسم المنتج",
+                            style: TextStyles.k22
+                                .copyWith(color: ColorsApp.kPrimaryColor)),
+                      ),
+                    );
+                  } else if (state is ProductLoadingState) {
                     return const ProductGridShimmer();
                   } else if (state is ProductFailureState) {
                     return Center(child: Text(state.errorMessage));
@@ -83,13 +95,11 @@ class _SearchBodyState extends State<SearchBody> {
                     final products = state.products;
                     if (products.isEmpty) {
                       return SizedBox(
-                        height: .5.sh,
-                        child: Center(
-                          child: Text("لا يوجد منتج بهذا الاسم",
-                              style: TextStyles.k22
-                                  .copyWith(color: ColorsApp.kPrimaryColor)),
-                        ),
-                      );
+                          height: .5.sh,
+                          child: Center(
+                              child: Text("لا يوجد منتج بهذا الاسم",
+                                  style: TextStyles.k22.copyWith(
+                                      color: ColorsApp.kPrimaryColor))));
                     }
                     return GridView.builder(
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

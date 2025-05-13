@@ -13,26 +13,24 @@ class CartItemModel extends Equatable {
   Map<String, dynamic> toMap() => {
         "product": product.toMap(),
         "quantity": quantity,
-        "selectedOption": selectedOption,
+        "selectedOption": selectedOption
       };
 
   Map<String, dynamic> toJson() => {
         "product": product.toJson(),
         "quantity": quantity,
-        "selectedOption": selectedOption,
+        "selectedOption": selectedOption
       };
 
   factory CartItemModel.fromMap(Map<String, dynamic> map) => CartItemModel(
-        product: ProductsModel.fromMap(map["product"]),
-        quantity: map["quantity"],
-        selectedOption: map["selectedOption"],
-      );
+      product: ProductsModel.fromMap(map["product"]),
+      quantity: map["quantity"],
+      selectedOption: map["selectedOption"]);
 
   factory CartItemModel.fromJson(Map<String, dynamic> map) => CartItemModel(
-        product: ProductsModel.fromMap(map["product"]),
-        quantity: map["quantity"],
-        selectedOption: map["selectedOption"],
-      );
+      product: ProductsModel.fromMap(map["product"]),
+      quantity: map["quantity"],
+      selectedOption: map["selectedOption"]);
 
   static String encodeList(List<CartItemModel> items) =>
       jsonEncode(items.map((item) => item.toMap()).toList());

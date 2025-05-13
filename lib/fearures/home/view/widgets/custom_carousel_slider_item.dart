@@ -14,3 +14,4 @@ class CustomCarouselSliderItem extends StatelessWidget {
         child: CustomCachedNetworkImage(url: image));
   }
 }
+// AssetImage(image)

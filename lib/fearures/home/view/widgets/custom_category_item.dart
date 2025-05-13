@@ -21,7 +21,7 @@ class CustomCategoryItem extends StatelessWidget {
           onTap: onTap,
           child: CircleAvatar(
             radius: 46.r,
-            backgroundImage: NetworkImage(image),
+            backgroundImage: AssetImage(image),
           ),
         ),
         SizedBox(height: 6.h),

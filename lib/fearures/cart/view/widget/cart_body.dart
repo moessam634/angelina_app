@@ -95,10 +95,11 @@ class _CartBodyState extends State<CartBody> {
                     onDelete: () {
                       context.read<CartCubit>().removeItem(product.id!);
                     },
-                    onTap: () {
-                      NavigationHelper.push(
+                    onTap: () async{
+                      await NavigationHelper.push(
                           context: context,
                           destination: ProductDetailsScreen(model: product));
+
                     },
                     title: product.name ?? '',
                     price: '${item.totalPrice.toStringAsFixed(2)} ر.س',

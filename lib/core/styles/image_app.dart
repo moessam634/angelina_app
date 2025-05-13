@@ -6,7 +6,10 @@ class ImageApp {
   static const String homeIcon = "${imagePath}home_icon.svg";
   static const String userIcon = "${imagePath}User.svg";
   static const String bannerPic = "${imagePath}BANNER1-2.png";
+  static const String bannerPic2 = "${imagePath}banner2.png";
   static const String xIcon = "${imagePath}X.svg";
+  static const String categoryImage = "${imagePath}categoryImage.png";
+  static const String drawerIcon = "${imagePath}menu.svg";
   static const String shoppingCartIcon =
       "${imagePath}shopping-cart-outline.svg";
 }

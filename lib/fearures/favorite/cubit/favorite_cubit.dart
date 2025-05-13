@@ -47,10 +47,9 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     }).toList();
 
     emit(FavoriteLoaded(
-      allFavorites: _allFavorites,
-      filteredFavorites: results,
-      searchQuery: query,
-    ));
+        allFavorites: _allFavorites,
+        filteredFavorites: results,
+        searchQuery: query));
   }
 
   Future<void> addFavoritesToCart() async {

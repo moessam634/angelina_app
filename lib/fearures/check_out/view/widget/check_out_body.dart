@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/styles/colors_app.dart';
 import '../../../../core/styles/text_styles.dart';
+import '../../../../core/utils/local_storage_helper.dart';
 import '../../../../core/validation/auth_validation.dart';
 import '../../../../core/widgets/app_shimmers.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -61,14 +62,29 @@ class _CheckOutBodyState extends State<CheckOutBody> {
     setState(() {
       _isProcessing = true;
     });
+    await LocalStorageService.saveUserInfo({
+      'first_name': _firstNameController.text,
+      'last_name': _lastNameController.text,
+      'email': _emailController.text,
+      'phone': _phoneController.text,
+      'city': _cityController.text,
+      'country': _countryController.text,
+      'building': _buildingController.text,
+      'street': _streetController.text,
+      'floor': _floorController.text,
+      'apartment': _apartmentController.text,
+    });
     final cartCubit = context.read<CartCubit>();
     final checkoutCubit = context.read<CheckOutCubit>();
     final payMobCubit = context.read<PayMobCubit>();
     try {
       // Show loading indicator
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("جاري تجهيز الدفع...")),
-      );
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(content: Text("جاري تجهيز الدفع...")),
+      if (mounted) {
+        customSnackBar(context: context, text: "جاري تجهيز الدفع...");
+      }
+      // );
       // 1. Create billing info
       final billing = Billing(
         firstName: _firstNameController.text,
@@ -127,6 +143,26 @@ class _CheckOutBodyState extends State<CheckOutBody> {
         });
       }
     }
+  }
+
+  void _loadSavedUserInfo() async {
+    final data = await LocalStorageService.loadUserInfo();
+    _firstNameController.text = data['first_name'] ?? '';
+    _lastNameController.text = data['last_name'] ?? '';
+    _emailController.text = data['email'] ?? '';
+    _phoneController.text = data['phone'] ?? '';
+    _cityController.text = data['city'] ?? '';
+    _countryController.text = data['country'] ?? '';
+    _buildingController.text = data['building'] ?? '';
+    _streetController.text = data['street'] ?? '';
+    _floorController.text = data['floor'] ?? '';
+    _apartmentController.text = data['apartment'] ?? '';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSavedUserInfo();
   }
 
   @override

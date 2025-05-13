@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import '../../../../core/utils/notification_service.dart';
 import '../../model/data/home_data.dart';
 import '../../model/models/products_model.dart';
 import 'product_state.dart';
@@ -7,13 +8,27 @@ class ProductsCubit extends Cubit<ProductsState> {
   ProductsCubit(this._homeProductData) : super(ProductLoadingState());
   final HomeData _homeProductData;
 
-  Future<List<ProductsModel>> getProduct(
-      {int? categoryId, String? searchQuery}) async {
+  Future<List<ProductsModel>> getProduct({
+    int? categoryId,
+    String? searchQuery,
+  }) async {
     try {
       if (!isClosed) emit(ProductLoadingState());
 
       final products = await _homeProductData.getProducts(
-          categoryId: categoryId, searchQuery: searchQuery);
+        categoryId: categoryId,
+        searchQuery: searchQuery,
+      );
+      for (final product in products) {
+        if ((product.stockQuantity ?? 0) < 900) {
+          await NotificationService().showNotification(
+            id: product.id ?? 0,
+            title: 'Low Stock Alert',
+            body:
+                '${product.name ?? 'Product'} stock is low (${product.stockQuantity ?? 0} left)',
+          );
+        }
+      }
 
       if (!isClosed) emit(ProductSuccessState(products: products));
       return products;
@@ -32,12 +47,15 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> loadMoreProducts() async {
     if (!_hasMore) return;
     try {
-      final newProducts = await _homeProductData.getProducts(page: _currentPage, perPage: 10);
+      final newProducts =
+          await _homeProductData.getProducts(page: _currentPage, perPage: 10);
       if (newProducts.length < 10) _hasMore = false;
 
       _allProducts.addAll(newProducts);
       _currentPage++;
-      if (!isClosed) emit(ProductSuccessState(products: List.from(_allProducts)));
+      if (!isClosed) {
+        emit(ProductSuccessState(products: List.from(_allProducts)));
+      }
     } catch (e) {
       if (!isClosed) emit(ProductFailureState(errorMessage: e.toString()));
     }
@@ -52,5 +70,5 @@ class ProductsCubit extends Cubit<ProductsState> {
       if (!isClosed) emit(ProductFailureState(errorMessage: e.toString()));
     }
   }
-
 }
+

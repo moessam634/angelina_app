@@ -11,8 +11,6 @@ class CustomProductCard extends StatelessWidget {
   final String title, price, imageUrl;
   final String? subtitle;
   final String? oldPrice, icon;
-
-  // final bool isFavorite;
   final bool isDiscounted;
   final String? discountLabel;
   final void Function()? onTap;
@@ -25,7 +23,6 @@ class CustomProductCard extends StatelessWidget {
       this.subtitle,
       required this.price,
       this.oldPrice,
-      // this.isFavorite = false,
       this.isDiscounted = false,
       this.discountLabel,
       this.onTap,

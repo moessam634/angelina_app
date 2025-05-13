@@ -44,8 +44,6 @@ class CheckOutCubit extends Cubit<CheckOutState> {
       if (isClosed) return;
       emit(CheckOutSuccess(response));
     } on DioException catch (e) {
-      print("Dio error status: ${e.response?.statusCode}");
-      print("Dio error body: ${e.response?.data}");
       throw Exception('Failed to create order: ${e.response?.data}');
     }
     catch (e) {

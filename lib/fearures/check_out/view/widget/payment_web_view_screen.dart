@@ -1,12 +1,16 @@
 import 'package:angelinashop/core/helper/navigation_helper.dart';
 import 'package:angelinashop/core/styles/colors_app.dart';
 import 'package:angelinashop/core/widgets/app_shimmers.dart';
+import 'package:angelinashop/fearures/profile/cubit/order_history_cubit.dart';
 import 'package:angelinashop/fearures/switcher/view/screen/switcher_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import '../../../../core/styles/text_styles.dart';
+import '../../../../core/utils/notification_service.dart';
 import '../../../cart/cubit/cart_cubit.dart';
+import '../../../cart/model/model/cart_model.dart';
+import '../../../profile/model/models/orders_history_model.dart';
 
 class PaymentWebViewScreen extends StatefulWidget {
   final String paymentUrl;
@@ -45,45 +49,72 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
               });
             }
           },
-          onNavigationRequest: (NavigationRequest request) {
-            // Prevent multiple processing of the same payment result
+          onNavigationRequest: (NavigationRequest request) async {
             if (_hasProcessedPayment) {
               return NavigationDecision.prevent;
             }
-            // Detect Paymob success URL
-            if (request.url.contains('success') ||
-                request.url.contains('paymob.com/acceptance/post_pay')) {
+            final uri = Uri.tryParse(request.url);
+            final successParam = uri?.queryParameters['success'];
+            // if (successParam == 'true') {
+            //   _hasProcessedPayment = true;
+            //   widget.onPaymentSuccess();
+            //   context.read<OrderHistoryCubit>().addOrder(sl());
+            //   context.read<CartCubit>().clearCart();
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     const SnackBar(content: Text("تمت عملية الدفع بنجاح")),
+            //   );
+            //   Future.delayed(const Duration(milliseconds: 500), () {
+            //     NavigationHelper.pushReplacement(
+            //       context: context,
+            //       destination: const SwitcherScreen(),
+            //     );
+            //   });
+            //   return NavigationDecision.prevent;
+            // }
+            if (successParam == 'true') {
               _hasProcessedPayment = true;
-              // First call onPaymentSuccess to submit the order
+              final cartCubit = context.read<CartCubit>();
+              final orderHistoryCubit = context.read<OrderHistoryCubit>();
+              final order = OrdersHistoryModel(
+                id: DateTime.now()
+                    .millisecondsSinceEpoch
+                    .toString(), // unique ID
+                date: DateTime.now(),
+                items: List<CartItemModel>.from(cartCubit.items),
+                totalAmount: cartCubit.total,
+              );
+              await orderHistoryCubit.addOrder(order);
+              await cartCubit.clearCart();
               widget.onPaymentSuccess();
-              // Then clear the cart
-              context.read<CartCubit>().clearCart();
-              // Show success message
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("تمت عملية الدفع بنجاح")));
-              // Navigate back to home screen
-              Future.delayed(const Duration(milliseconds: 500), () {
-                NavigationHelper.pushReplacement(
-                    context: context, destination: const SwitcherScreen());
-              });
-
-              return NavigationDecision.prevent;
-            }
-            // Detect Paymob failure URL
-            if (request.url.contains('voided') ||
-                request.url.contains('declined') ||
-                request.url.contains('error')) {
-              _hasProcessedPayment = true;
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("فشل عملية الدفع")));
-              // Close WebView on failure with a slight delay
+              await NotificationService().showNotification(
+                id: 1,
+                title: 'تم الدفع بنجاح',
+                body: 'شكراً لطلبك. تم إكمال عملية الدفع بنجاح.',
+              );
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
-                  Navigator.pop(context);
+                  NavigationHelper.pushReplacement(
+                    context: context,
+                    destination: const SwitcherScreen(),
+                  );
                 }
               });
               return NavigationDecision.prevent;
             }
+
+            if (successParam == 'false') {
+              _hasProcessedPayment = true;
+              await NotificationService().showNotification(
+                id: 2,
+                title: 'فشل الدفع',
+                body: 'لم تتم عملية الدفع. الرجاء المحاولة مرة أخرى.',
+              );
+              Future.delayed(const Duration(milliseconds: 500), () {
+                if (mounted) Navigator.pop(context);
+              });
+              return NavigationDecision.prevent;
+            }
+
             return NavigationDecision.navigate;
           },
         ),
