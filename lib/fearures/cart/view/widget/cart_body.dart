@@ -79,7 +79,7 @@ class _CartBodyState extends State<CartBody> {
             ListView.separated(
               controller: scrollController,
               itemCount: cartItems.length,
-              padding: EdgeInsets.only(bottom: 295.h),
+              padding: EdgeInsets.only(bottom: 305.h),
               separatorBuilder: (context, index) => SizedBox(height: 16.h),
               itemBuilder: (context, index) {
                 final item = cartItems[index];

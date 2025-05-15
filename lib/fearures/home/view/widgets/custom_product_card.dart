@@ -94,6 +94,7 @@ class CustomProductCard extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                 ),
+              SizedBox(height: 2.h),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -108,7 +109,7 @@ class CustomProductCard extends StatelessWidget {
                       ),
                     ),
                   ],
-                  SizedBox(width: 4.w),
+                  SizedBox(height: 8.w),
                   Flexible(
                     child: Text(
                       " $priceر.س ",

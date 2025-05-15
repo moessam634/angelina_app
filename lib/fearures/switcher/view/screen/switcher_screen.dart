@@ -23,10 +23,8 @@ Widget _buildIcon(String iconPath, int index, int currentIndex) {
   final color =
       index == currentIndex ? ColorsApp.kPrimaryColor : ColorsApp.kThirdColor;
 
-  return SvgPicture.asset(
-    iconPath,
-    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-  );
+  return SvgPicture.asset(iconPath,
+      colorFilter: ColorFilter.mode(color, BlendMode.srcIn));
 }
 
 class SwitcherScreenState extends State<SwitcherScreen> {
@@ -44,32 +42,15 @@ class SwitcherScreenState extends State<SwitcherScreen> {
     _controller.dispose();
   }
 
-  // @override
-  // Future<void> initState() async {
-  //   super.initState();
-  //   await sl<NotificationService>().showSimpleNotification(
-  //     title: 'Test Notification',
-  //     body: 'This is a test from foreground!',
-  //   );
-  //
-  //   await Workmanager().registerPeriodicTask(
-  //     "check-stock-sale-task",
-  //     notifyTask,
-  //     frequency: Duration(hours: 6),
-  //     initialDelay: Duration(minutes: 1),
-  //     backoffPolicy: BackoffPolicy.exponential,
-  //     constraints: Constraints(
-  //       networkType: NetworkType.connected, // Optional
-  //     ),
-  //   );
-  //
-  // }
-
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: sl<SwitcherCubit>(),
-      child: BlocBuilder<SwitcherCubit, SwitcherState>(
+      child: BlocConsumer<SwitcherCubit, SwitcherState>(
+        listener:  (context, state) {
+          final switcherCubit = context.read<SwitcherCubit>();
+         _controller.jumpToPage(switcherCubit.currentIndex);
+        },
         builder: (context, state) {
           final switcherCubit = context.read<SwitcherCubit>();
           return Directionality(
@@ -85,7 +66,6 @@ class SwitcherScreenState extends State<SwitcherScreen> {
               bottomNavigationBar: BottomNavigationBar(
                 currentIndex: switcherCubit.currentIndex,
                 onTap: (index) {
-                  _controller.jumpToPage(index);
                   switcherCubit.changeScreen(index);
                 },
                 backgroundColor: Colors.white,

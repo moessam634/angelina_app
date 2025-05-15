@@ -270,9 +270,10 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
     final colorAttribute = _productModel!.attributes?.firstWhere(
           (attr) =>
-      attr.name == 'لون' ||
-          attr.name == 'اللون' ||
-          attr.name?.toLowerCase() == 'color',
+      attr.name == 'لون' ,
+          // ||
+          // attr.name == 'اللون' ||
+          // attr.name?.toLowerCase() == 'color',
       orElse: () => ProductAttribute(options: []),
     );
 
@@ -287,11 +288,9 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   Future<void> getProductDetails(int productId) async {
     try {
       emit(ProductDetailsLoading());
-
       // Fetch variations
       _allVariations.clear();
       _allVariations.addAll(await productDetailsData.getProductVariations(productId));
-
       // Extract colors
       _availableColors.clear();
       _availableColors.addAll(_extractColorsFromProduct());

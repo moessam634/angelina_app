@@ -18,7 +18,6 @@ PreferredSize defaultAppBar({
     leading = Builder(
         builder: (context) => InkWell(
             onTap: () {
-// Make sure the Scaffold context is correctly accessed
               Scaffold.of(context).openDrawer();
             },
             child: SvgPicture.asset(ImageApp.drawerIcon,

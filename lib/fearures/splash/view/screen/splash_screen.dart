@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> delayingFunction() {
     return Future.delayed(
-      Duration(seconds: 2),
+      Duration(seconds: 3),
       () {
         if (mounted) {
           NavigationHelper.pushUntil(

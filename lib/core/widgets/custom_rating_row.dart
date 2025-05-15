@@ -13,6 +13,7 @@ class CustomRatingRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+        textDirection: TextDirection.ltr,
       mainAxisSize: MainAxisSize.min,
       children: [
         Flexible(

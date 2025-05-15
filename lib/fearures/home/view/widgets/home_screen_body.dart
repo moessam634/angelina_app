@@ -150,6 +150,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                             title: product.name ?? "No Name",
                             price: product.price ?? "0.0",
                             oldPrice: product.regularPrice ?? "0.0",
+                            subtitle: product.categories?.first.name ?? "No Name",
                             isDiscounted: isDiscounted,
                             discountLabel: isDiscounted
                                 ? '${PriceUtils.calculateDiscountPercentage(product.price ?? '0', product.regularPrice ?? '0')}%'

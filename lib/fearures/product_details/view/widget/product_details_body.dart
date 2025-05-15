@@ -19,6 +19,7 @@ import '../../../home/model/models/products_model.dart';
 import '../../cubit/product_details_cubit.dart';
 import '../../cubit/product_details_state.dart';
 import 'custom_drop_down_menu.dart';
+import 'expandable_text.dart';
 
 class ProductDetailsBody extends StatefulWidget {
   const ProductDetailsBody({super.key, required this.model});
@@ -214,19 +215,20 @@ class _ProductDetailsBodyState extends State<ProductDetailsBody> {
                                   style: TextStyles.k16.copyWith(
                                       color: ColorsApp.kSecondaryColor)),
                               SizedBox(height: 5.h),
-                              Text(description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyles.k12.copyWith(
-                                      color: ColorsApp.kLightGreyColor)),
+                              ExpandableText(
+                                text: description,
+                                style: TextStyles.k12
+                                    .copyWith(color: ColorsApp.kLightGreyColor),
+                              ),
                               SizedBox(height: 20.h),
                               Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Flexible(
+                                      flex: 2,
                                       child: Text(
-                                          "${double.parse(widget.model.price!) * quantity} ر.س",
+                                          "${(double.parse(widget.model.price!) * quantity).toStringAsFixed(2)} ر.س",
                                           style: TextStyles.k22.copyWith(
                                               fontWeight: FontWeight.w700)),
                                     ),
