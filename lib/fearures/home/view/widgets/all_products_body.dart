@@ -3,6 +3,7 @@ import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_sta
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../../../core/helper/navigation_helper.dart';
 import '../../../../core/styles/image_app.dart';
 import '../../../../core/styles/text_styles.dart';
@@ -24,9 +25,13 @@ class _AllProductsBodyState extends State<AllProductsBody> {
 
   @override
   void initState() {
+    final cubit = context.read<ProductsCubit>();
     super.initState();
+    // Load products when screen initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      cubit.getProduct();
+    });
     _scrollController.addListener(() {
-      final cubit = context.read<ProductsCubit>();
       if (_scrollController.position.pixels >=
               _scrollController.position.maxScrollExtent - 100 &&
           cubit.hasMore &&
@@ -45,8 +50,10 @@ class _AllProductsBodyState extends State<AllProductsBody> {
     return BlocBuilder<ProductsCubit, ProductsState>(
       builder: (context, state) {
         if (state is ProductLoadingState) {
-          return const ProductGridShimmer();
-
+          return Padding(
+            padding: EdgeInsets.all(16.w),
+            child: const ProductGridShimmer(),
+          );
         } else if (state is ProductFailureState) {
           return Center(
             child: Padding(
@@ -59,6 +66,9 @@ class _AllProductsBodyState extends State<AllProductsBody> {
           );
         } else if (state is ProductSuccessState) {
           final products = state.products;
+          final cubit = context.read<ProductsCubit>();
+          final isLoadingMore = state is ProductLoadingMoreState;
+
           return ListView(controller: _scrollController, children: [
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
@@ -115,18 +125,30 @@ class _AllProductsBodyState extends State<AllProductsBody> {
                       },
                     ),
                   SizedBox(height: 20.h),
-                  if (context.read<ProductsCubit>().hasMore)
+                  if (cubit.hasMore)
                     Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 20.w, vertical: 12.h),
                         child: CustomButton(
-                            text: "عرض المزيد",
                             verticalPadding: 16.h,
-                            onTap: () {
-                              context.read<ProductsCubit>().loadMoreProducts();
-                            },
-                            style:
-                                TextStyles.k16.copyWith(color: Colors.white)))
+                            onTap: isLoadingMore
+                                ? null
+                                : () {
+                                    context
+                                        .read<ProductsCubit>()
+                                        .loadMoreProducts();
+                                  },
+                            style: TextStyles.k16.copyWith(color: Colors.white),
+                            child: isLoadingMore
+                                ? Center(
+                                    child: SpinKitFadingCircle(
+                                        size: 24.sp, color: Colors.white))
+                                : Text(
+                                    "عرض المزيد",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyles.k16
+                                        .copyWith(color: Colors.white),
+                                  ))),
                 ]))
           ]);
         }

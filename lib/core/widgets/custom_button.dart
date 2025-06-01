@@ -57,7 +57,7 @@ import '../styles/colors_app.dart';
 class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
-    required this.text,
+     this.text,
     this.style,
     this.onTap,
     this.color,
@@ -67,10 +67,10 @@ class CustomButton extends StatelessWidget {
     this.height,
     this.verticalPadding,
     this.horizontalPadding,
-    this.disabled = false,
+    this.disabled = false, this.child,
   });
 
-  final String text;
+  final String? text;
   final TextStyle? style;
   final Color? color;
   final BoxBorder? border;
@@ -78,7 +78,8 @@ class CustomButton extends StatelessWidget {
   final double? radius;
   final double? width, height;
   final double? verticalPadding, horizontalPadding;
-  final bool disabled; // Default to false
+  final bool disabled;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -102,8 +103,8 @@ class CustomButton extends StatelessWidget {
               ? Colors.grey.shade300 // Use a lighter color when disabled
               : color ?? ColorsApp.kPrimaryColor,
         ),
-        child: Text(
-          text,
+        child:child ?? Text(
+          text??"",
           style: disabled
               ? (style?.copyWith(color: Colors.grey.shade700) ??
               TextStyle(color: Colors.grey.shade700))

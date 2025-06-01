@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:angelinashop/core/extensions/product_discount_extensions.dart';
 import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,6 +116,8 @@ class _SearchBodyState extends State<SearchBody> {
                           final isFav = context
                               .read<FavoriteCubit>()
                               .isFavorite(product.id!);
+                          final isDiscounted = product.isDiscounted;
+                          final discount = product.discountPercentage;
                           return Padding(
                               padding: EdgeInsets.symmetric(vertical: 5.w),
                               child: CustomProductCard(
@@ -127,6 +130,8 @@ class _SearchBodyState extends State<SearchBody> {
                                         .toggleFavorite(product);
                                     setState(() {});
                                   },
+                                  isDiscounted: isDiscounted,
+                                  discountLabel:isDiscounted? '$discount%' : null,
                                   imageUrl: product.images?.first.src ?? "",
                                   title: product.name ?? "No Name",
                                   price: product.price ?? "0.0",

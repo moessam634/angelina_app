@@ -75,7 +75,7 @@ class PaymobManager {
           "expiration": 3600,
           "auth_token": authenticationToken,
           "order_id": orderId, // Pass integer directly, not as string
-          "integration_id": 5060312, // Your integration ID
+          "integration_id": ApiKeys.payMobIntegrationId, // Your integration ID
           "amount_cents": amountCents, // Integer value
           "currency": currency,
           "billing_data": {

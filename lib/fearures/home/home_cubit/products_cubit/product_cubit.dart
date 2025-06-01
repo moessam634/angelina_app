@@ -8,19 +8,14 @@ class ProductsCubit extends Cubit<ProductsState> {
   ProductsCubit(this._homeProductData) : super(ProductLoadingState());
   final HomeData _homeProductData;
 
-  Future<List<ProductsModel>> getProduct({
-    int? categoryId,
-    String? searchQuery,
-  }) async {
+  Future<List<ProductsModel>> getProduct(
+      {int? categoryId, String? searchQuery}) async {
     try {
       if (!isClosed) emit(ProductLoadingState());
-
       final products = await _homeProductData.getProducts(
-        categoryId: categoryId,
-        searchQuery: searchQuery,
-      );
+          categoryId: categoryId, searchQuery: searchQuery);
       for (final product in products) {
-        if ((product.stockQuantity ?? 0) < 900) {
+        if ((product.stockQuantity ?? 0) < 10) {
           await NotificationService().showNotification(
             id: product.id ?? 0,
             title: 'Low Stock Alert',
@@ -29,6 +24,12 @@ class ProductsCubit extends Cubit<ProductsState> {
           );
         }
       }
+
+      // Reset pagination when getting new products
+      _currentPage = 1;
+      _allProducts.clear();
+      _allProducts.addAll(products);
+      _hasMore = products.length >= 10; // Assuming 10 is your page size
 
       if (!isClosed) emit(ProductSuccessState(products: products));
       return products;
@@ -41,22 +42,29 @@ class ProductsCubit extends Cubit<ProductsState> {
   int _currentPage = 1;
   final List<ProductsModel> _allProducts = [];
   bool _hasMore = true;
-
   bool get hasMore => _hasMore;
 
   Future<void> loadMoreProducts() async {
-    if (!_hasMore) return;
+    if (!_hasMore || state is ProductLoadingMoreState) return;
     try {
+      // Emit loading more state with current products
+      if (!isClosed) {
+        emit(ProductLoadingMoreState(products: List.from(_allProducts)));
+      }
+      _currentPage++;
       final newProducts =
           await _homeProductData.getProducts(page: _currentPage, perPage: 10);
+
       if (newProducts.length < 10) _hasMore = false;
 
       _allProducts.addAll(newProducts);
-      _currentPage++;
+
       if (!isClosed) {
         emit(ProductSuccessState(products: List.from(_allProducts)));
       }
     } catch (e) {
+      // Revert page number on error
+      _currentPage--;
       if (!isClosed) emit(ProductFailureState(errorMessage: e.toString()));
     }
   }
@@ -65,10 +73,18 @@ class ProductsCubit extends Cubit<ProductsState> {
     try {
       if (!isClosed) emit(ProductLoadingState());
       final products = await _homeProductData.getProducts(searchQuery: query);
+
+      // Reset pagination for search results
+      _currentPage = 1;
+      _allProducts.clear();
+      _allProducts.addAll(products);
+      _hasMore = false; // Usually search results don't have pagination
+
       if (!isClosed) emit(ProductSuccessState(products: products));
     } catch (e) {
       if (!isClosed) emit(ProductFailureState(errorMessage: e.toString()));
     }
   }
+  // Helper method to check if currently loading more
+  bool get isLoadingMore => state is ProductLoadingMoreState;
 }
-

@@ -25,9 +25,11 @@ class CustomCategoryItem extends StatelessWidget {
           ),
         ),
         SizedBox(height: 6.h),
-        Text(
-          categoryName,
-          style: textStyle ?? TextStyles.k12,
+        Flexible(
+          child: Text(
+            categoryName,
+            style: textStyle ?? TextStyles.k12,
+          ),
         )
       ],
     );

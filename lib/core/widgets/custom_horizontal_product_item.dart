@@ -92,15 +92,20 @@ class CustomHorizontalProductItem extends StatelessWidget {
                                 .copyWith(color: ColorsApp.kThirdColor),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis),
-                        Spacer(),
-                        CustomProductPriceSection(
-                            type: productCardType,
-                            textDirection: textDirection,
-                            productCartPriceSection: productCartPriceSection,
-                            price: price,
-                            priceTextStyle: priceTextStyle,
-                            productFavoritePriceSection:
-                                productFavoritePriceSection),
+                        // Spacer(),
+                        Flexible(
+                          child: Align(
+                            alignment: Alignment.bottomCenter,
+                            child: CustomProductPriceSection(
+                                type: productCardType,
+                                textDirection: textDirection,
+                                productCartPriceSection: productCartPriceSection,
+                                price: price,
+                                priceTextStyle: priceTextStyle,
+                                productFavoritePriceSection:
+                                    productFavoritePriceSection),
+                          ),
+                        ),
                       ],
                     ),
                   ),

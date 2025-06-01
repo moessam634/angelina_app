@@ -1,7 +1,7 @@
+import 'package:angelinashop/core/extensions/product_discount_extensions.dart';
 import 'package:angelinashop/core/helper/navigation_helper.dart';
 import 'package:angelinashop/core/styles/image_app.dart';
 import 'package:angelinashop/core/styles/text_styles.dart';
-import 'package:angelinashop/core/utils/price_utils.dart';
 import 'package:angelinashop/fearures/home/home_cubit/categories_cubit/categories_cubit.dart';
 import 'package:angelinashop/fearures/home/home_cubit/categories_cubit/categories_state.dart';
 import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_cubit.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/widgets/app_shimmers.dart';
 import '../../../favorite/cubit/favorite_cubit.dart';
+import '../../../favorite/cubit/favorite_state.dart';
 import '../../home_cubit/products_cubit/product_state.dart';
 import 'custom_carousel_slider.dart';
 import 'custom_category_item.dart';
@@ -45,10 +46,12 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
             children: [
               CustomCarousel(
                 imageUrls: [
-                  'https://i.imgur.com/OnwEDW3.jpg',
-                  'https://farm3.staticflickr.com/2220/1572613671_7311098b76_z_d.jpg',
-                  'https://farm4.staticflickr.com/3075/3168662394_7d7103de7d_z_d.jpg',
-                  'https://farm9.staticflickr.com/8505/8441256181_4e98d8bff5_z_d.jpg',
+                  // 'https://i.imgur.com/OnwEDW3.jpg',
+                  // 'https://farm3.staticflickr.com/2220/1572613671_7311098b76_z_d.jpg',
+                  // 'https://farm4.staticflickr.com/3075/3168662394_7d7103de7d_z_d.jpg',
+                  // 'https://farm9.staticflickr.com/8505/8441256181_4e98d8bff5_z_d.jpg',
+                  ImageApp.bannerPic,
+                  ImageApp.bannerPic2
                 ],
               ),
               SizedBox(height: 8.h),
@@ -69,7 +72,8 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return CustomCategoryItem(
-                            image: categories[index].image ??ImageApp.categoryImage,
+                            image: categories[index].image ??
+                                ImageApp.categoryImage,
                             categoryName: categories[index].name ?? "No Name",
                             onTap: () {
                               context
@@ -133,43 +137,40 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                       itemCount: 10,
                       itemBuilder: (context, index) {
                         final product = products[index];
-                        final isFav = context
-                            .read<FavoriteCubit>()
-                            .isFavorite(product.id!);
-                        final isDiscounted = PriceUtils.isTrulyDiscounted(
-                          price: product.price ?? '0',
-                          regularPrice: product.regularPrice ?? '0',
-                          salePrice: product.salePrice ?? '0',
-                          onSale: product.onSale ?? false,
-                        );
-
+                        final isDiscounted = product.isDiscounted;
+                        final discount = product.discountPercentage;
                         return Padding(
                           padding: EdgeInsets.symmetric(vertical: 5.w),
-                          child: CustomProductCard(
-                            imageUrl: product.images?.first.src ?? "",
-                            title: product.name ?? "No Name",
-                            price: product.price ?? "0.0",
-                            oldPrice: product.regularPrice ?? "0.0",
-                            subtitle: product.categories?.first.name ?? "No Name",
-                            isDiscounted: isDiscounted,
-                            discountLabel: isDiscounted
-                                ? '${PriceUtils.calculateDiscountPercentage(product.price ?? '0', product.regularPrice ?? '0')}%'
-                                : null,
-                            onIconPressed: () {
-                              context
+                          child: BlocBuilder<FavoriteCubit, FavoriteState>(
+                            builder: (context, favState) {
+                              final isFav = context
                                   .read<FavoriteCubit>()
-                                  .toggleFavorite(product);
-                              setState(() {});
-                            },
-                            icon: isFav
-                                ? ImageApp.filledHeartIcon
-                                : ImageApp.heartIcon,
-                            onTap: () {
-                              NavigationHelper.push(
-                                context: context,
-                                destination: ProductDetailsScreen(
-                                  model: product,
-                                ),
+                                  .isFavorite(product.id!);
+                              return CustomProductCard(
+                                imageUrl: product.images?.first.src ?? "",
+                                title: product.name ?? "No Name",
+                                price: product.price ?? "0.0",
+                                oldPrice: product.regularPrice ?? "0.0",
+                                subtitle:
+                                    product.categories?.first.name ?? "No Name",
+                                isDiscounted: isDiscounted,
+                                discountLabel:
+                                    isDiscounted ? '$discount%' : null,
+                                onIconPressed: () {
+                                  context
+                                      .read<FavoriteCubit>()
+                                      .toggleFavorite(product);
+                                },
+                                icon: isFav
+                                    ? ImageApp.filledHeartIcon
+                                    : ImageApp.heartIcon,
+                                onTap: () {
+                                  NavigationHelper.push(
+                                    context: context,
+                                    destination:
+                                        ProductDetailsScreen(model: product),
+                                  );
+                                },
                               );
                             },
                           ),
@@ -179,7 +180,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                   } else if (state is ProductFailureState) {
                     return Center(
                       child: Text(
-                          'حدث خطأ أثناء تحميل المنتجات: ${state.errorMessage}',
+                          'حدث خطأ أثناء تحميل المنتجات ${state.errorMessage}',
                           style: TextStyle(color: Colors.red)),
                     );
                   } else {

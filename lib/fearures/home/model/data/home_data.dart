@@ -44,10 +44,8 @@ class HomeData {
       if (searchQuery != null && searchQuery.isNotEmpty) {
         queryParams['search'] = searchQuery;
       }
-
       final response =
           await dio.get(ApiEndpoints.baseUrl, queryParameters: queryParams);
-
       if (response.statusCode == 200) {
         final List<dynamic> productsJson = response.data;
         final List<ProductsModel> products =
@@ -62,6 +60,4 @@ class HomeData {
       throw Exception("Unknown error: $e");
     }
   }
-
 }
-

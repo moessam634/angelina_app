@@ -3,6 +3,7 @@ import 'package:angelinashop/core/styles/image_app.dart';
 import 'package:angelinashop/fearures/profile/view/widget/profile_photo_bottom_sheet.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/styles/text_styles.dart';
 import '../../../../core/utils/local_storage_helper.dart';
 import '../screen/order_history_screen.dart';
 import 'custom_row_item.dart';
@@ -36,6 +37,7 @@ class _ProfileBodyState extends State<ProfileBody> {
       userEmail = data['email'];
     });
   }
+
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -61,7 +63,6 @@ class _ProfileBodyState extends State<ProfileBody> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-
           CircleAvatar(
             radius: 50.r,
             backgroundImage: _savedImage != null
@@ -70,18 +71,22 @@ class _ProfileBodyState extends State<ProfileBody> {
           ),
           SizedBox(height: 16.h),
           Text(
-            userName??"example",
+            userName ?? "example",
             style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 4.h),
           Text(
-            userEmail??"email@example.com",
+            userEmail ?? "email@example.com",
             style: TextStyle(fontSize: 14.sp, color: Colors.grey),
           ),
           SizedBox(height: 24.h),
           ListTile(
             leading: const Icon(Icons.image),
-            title: const Text('Choose Profile Photo'),
+            title: Text(
+              'اختر صورة الملف الشخصي',
+              style: TextStyles.k18
+                  .copyWith(fontWeight: FontWeight.w400, letterSpacing: 1.26),
+            ),
             onTap: () => showModalBottomSheet(
               context: context,
               shape: const RoundedRectangleBorder(
@@ -98,17 +103,14 @@ class _ProfileBodyState extends State<ProfileBody> {
                 },
               ),
             ),
-            trailing: Icon(
-              Icons.arrow_forward_ios,
-              size: 20,
-            ),
+            trailing: Icon(Icons.arrow_forward_ios, size: 20),
             contentPadding: EdgeInsets.zero,
           ),
 
           // History of orders
           CustomRowItem(
             leadingIcon: Icons.history,
-            text: 'Order History',
+            text: 'سجل الطلبات',
             onTap: () {
               NavigationHelper.push(
                 context: context,
