@@ -1,3 +1,4 @@
+import 'package:angelinashop/core/extensions/product_discount_extensions.dart';
 import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_cubit.dart';
 import 'package:angelinashop/fearures/home/home_cubit/products_cubit/product_state.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +69,6 @@ class _AllProductsBodyState extends State<AllProductsBody> {
           final products = state.products;
           final cubit = context.read<ProductsCubit>();
           final isLoadingMore = state is ProductLoadingMoreState;
-
           return ListView(controller: _scrollController, children: [
             Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
@@ -89,11 +89,14 @@ class _AllProductsBodyState extends State<AllProductsBody> {
                         crossAxisSpacing: 14.w,
                         mainAxisSpacing: 12.h,
                       ),
+                      cacheExtent: 350.h,
                       itemCount: products.length,
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         final product = products[index];
+                      final isDiscounted= product.isDiscounted;
+                      final discount= product.discountPercentage;
                         final isFav = context
                             .read<FavoriteCubit>()
                             .isFavorite(product.id!);
@@ -109,6 +112,9 @@ class _AllProductsBodyState extends State<AllProductsBody> {
                                   .toggleFavorite(product);
                               setState(() {});
                             },
+                            subtitle: product.categories?.first.name ?? "No Name",
+                            isDiscounted: isDiscounted,
+                            discountLabel:" $discount%",
                             imageUrl: product.images?.first.src ?? "",
                             title: product.name ?? "No Name",
                             price: product.price ?? "0.0",

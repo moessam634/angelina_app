@@ -10,6 +10,7 @@ class ImageApp {
   static const String xIcon = "${imagePath}X.svg";
   static const String categoryImage = "${imagePath}categoryImage.png";
   static const String drawerIcon = "${imagePath}menu.svg";
+  static const String splashIcon = "${imagePath}play_store_512.png";
   static const String shoppingCartIcon =
       "${imagePath}shopping-cart-outline.svg";
 }

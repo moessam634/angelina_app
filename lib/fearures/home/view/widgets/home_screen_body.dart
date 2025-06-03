@@ -127,6 +127,7 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                     }
                     return GridView.builder(
                       shrinkWrap: true,
+                      padding: EdgeInsets.symmetric(vertical: 5.w),
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
@@ -139,41 +140,38 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
                         final product = products[index];
                         final isDiscounted = product.isDiscounted;
                         final discount = product.discountPercentage;
-                        return Padding(
-                          padding: EdgeInsets.symmetric(vertical: 5.w),
-                          child: BlocBuilder<FavoriteCubit, FavoriteState>(
-                            builder: (context, favState) {
-                              final isFav = context
-                                  .read<FavoriteCubit>()
-                                  .isFavorite(product.id!);
-                              return CustomProductCard(
-                                imageUrl: product.images?.first.src ?? "",
-                                title: product.name ?? "No Name",
-                                price: product.price ?? "0.0",
-                                oldPrice: product.regularPrice ?? "0.0",
-                                subtitle:
-                                    product.categories?.first.name ?? "No Name",
-                                isDiscounted: isDiscounted,
-                                discountLabel:
-                                    isDiscounted ? '$discount%' : null,
-                                onIconPressed: () {
-                                  context
-                                      .read<FavoriteCubit>()
-                                      .toggleFavorite(product);
-                                },
-                                icon: isFav
-                                    ? ImageApp.filledHeartIcon
-                                    : ImageApp.heartIcon,
-                                onTap: () {
-                                  NavigationHelper.push(
-                                    context: context,
-                                    destination:
-                                        ProductDetailsScreen(model: product),
-                                  );
-                                },
-                              );
-                            },
-                          ),
+                        return BlocBuilder<FavoriteCubit, FavoriteState>(
+                          builder: (context, favState) {
+                            final isFav = context
+                                .read<FavoriteCubit>()
+                                .isFavorite(product.id!);
+                            return CustomProductCard(
+                              imageUrl: product.images?.first.src ?? "",
+                              title: product.name ?? "No Name",
+                              price: product.price ?? "0.0",
+                              oldPrice: product.regularPrice ?? "0.0",
+                              subtitle:
+                                  product.categories?.first.name ?? "No Name",
+                              isDiscounted: isDiscounted,
+                              discountLabel:
+                                  isDiscounted ? '$discount%' : null,
+                              onIconPressed: () {
+                                context
+                                    .read<FavoriteCubit>()
+                                    .toggleFavorite(product);
+                              },
+                              icon: isFav
+                                  ? ImageApp.filledHeartIcon
+                                  : ImageApp.heartIcon,
+                              onTap: () {
+                                NavigationHelper.push(
+                                  context: context,
+                                  destination:
+                                      ProductDetailsScreen(model: product),
+                                );
+                              },
+                            );
+                          },
                         );
                       },
                     );

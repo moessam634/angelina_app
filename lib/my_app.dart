@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       splitScreenMode: true,
       builder: (_, child) {
         return MaterialApp(
+          showPerformanceOverlay: true,
           theme: ThemeData(scaffoldBackgroundColor: Colors.white),
           debugShowCheckedModeBanner: false,
           home: child,

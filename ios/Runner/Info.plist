@@ -45,5 +45,26 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+
+	<!-- 🔐 Permissions -->
+
+	<!-- 📸 Image Picker -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires camera access to take photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to your photo library to select images.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs permission to save images to your photo library.</string>
+
+	<!-- 🔔 Notifications -->
+	<key>NSUserNotificationAlertUsageDescription</key>
+	<string>This app uses notifications to keep you informed.</string>
+
+	<!-- 🌐 WebView (Optional - only if your web content uses these) -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs access to the microphone for web content.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app may use your location for web content.</string>
+
 </dict>
 </plist>

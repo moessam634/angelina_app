@@ -14,6 +14,7 @@ import 'package:timezone/data/latest_all.dart' as tz;
 
 void main() async {
   // runApp(const MyApp());
+  // debugPrintRebuildDirtyWidgets = true;
   WidgetsFlutterBinding.ensureInitialized();
   Bloc.observer = AppBlocObserver();
   tz.initializeTimeZones();

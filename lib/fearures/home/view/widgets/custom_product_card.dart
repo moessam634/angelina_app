@@ -113,6 +113,7 @@ class CustomProductCard extends StatelessWidget {
                     ),
                   ],
                 ),
+
                 Flexible(
                   child: Align(
                     alignment: Alignment.bottomCenter,
@@ -125,6 +126,7 @@ class CustomProductCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 4.h)
+
               ],
             ),
           ),

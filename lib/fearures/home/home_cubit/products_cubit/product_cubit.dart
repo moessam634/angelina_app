@@ -7,6 +7,11 @@ import 'product_state.dart';
 class ProductsCubit extends Cubit<ProductsState> {
   ProductsCubit(this._homeProductData) : super(ProductLoadingState());
   final HomeData _homeProductData;
+  final List<ProductsModel> _allProducts = [];
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool get hasMore => _hasMore;
+
 
   Future<List<ProductsModel>> getProduct(
       {int? categoryId, String? searchQuery}) async {
@@ -24,13 +29,11 @@ class ProductsCubit extends Cubit<ProductsState> {
           );
         }
       }
-
       // Reset pagination when getting new products
       _currentPage = 1;
       _allProducts.clear();
       _allProducts.addAll(products);
       _hasMore = products.length >= 10; // Assuming 10 is your page size
-
       if (!isClosed) emit(ProductSuccessState(products: products));
       return products;
     } catch (e) {
@@ -38,11 +41,6 @@ class ProductsCubit extends Cubit<ProductsState> {
       rethrow;
     }
   }
-
-  int _currentPage = 1;
-  final List<ProductsModel> _allProducts = [];
-  bool _hasMore = true;
-  bool get hasMore => _hasMore;
 
   Future<void> loadMoreProducts() async {
     if (!_hasMore || state is ProductLoadingMoreState) return;
@@ -56,7 +54,6 @@ class ProductsCubit extends Cubit<ProductsState> {
           await _homeProductData.getProducts(page: _currentPage, perPage: 10);
 
       if (newProducts.length < 10) _hasMore = false;
-
       _allProducts.addAll(newProducts);
 
       if (!isClosed) {

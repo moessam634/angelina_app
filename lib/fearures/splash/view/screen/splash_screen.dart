@@ -2,6 +2,7 @@ import 'package:angelinashop/fearures/switcher/view/screen/switcher_screen.dart'
 import 'package:flutter/material.dart';
 import '../../../../core/helper/navigation_helper.dart';
 import '../widget/splash_screen_body.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -18,7 +19,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SplashScreenBody());
+    return Scaffold(backgroundColor: Colors.white, body: SplashScreenBody());
   }
 
   Future<void> delayingFunction() {
@@ -34,5 +35,4 @@ class _SplashScreenState extends State<SplashScreen> {
       },
     );
   }
-
 }

@@ -43,9 +43,9 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
-flutter_icons:
-  android: true
-  image_path: "assets/images/angelinaPic.png"
+#flutter_icons:
+#  android: true
+#  image_path: "assets/images/angelinaPic.png"
 
 flutter:
   uses-material-design: true

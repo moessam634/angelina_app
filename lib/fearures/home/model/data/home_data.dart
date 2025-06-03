@@ -38,7 +38,7 @@ class HomeData {
         'per_page': perPage,
         'consumer_key': ApiEndpoints.consumerKey,
         'consumer_secret': ApiEndpoints.consumerSecret,
-        'page': page
+        'page': page,
       };
       if (categoryId != null) queryParams['category'] = categoryId;
       if (searchQuery != null && searchQuery.isNotEmpty) {
