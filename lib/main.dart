@@ -11,7 +11,6 @@ import 'fearures/profile/cubit/order_history_cubit.dart';
 import 'my_app.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
-
 void main() async {
   // runApp(const MyApp());
   // debugPrintRebuildDirtyWidgets = true;
@@ -33,7 +32,6 @@ void main() async {
     ),
   ));
 }
-
 
 Future<void> requestNotificationPermission() async {
   final status = await Permission.notification.status;

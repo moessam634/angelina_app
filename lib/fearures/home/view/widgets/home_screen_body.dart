@@ -1,5 +1,6 @@
 import 'package:angelinashop/core/extensions/product_discount_extensions.dart';
 import 'package:angelinashop/core/helper/navigation_helper.dart';
+import 'package:angelinashop/core/styles/colors_app.dart';
 import 'package:angelinashop/core/styles/image_app.dart';
 import 'package:angelinashop/core/styles/text_styles.dart';
 import 'package:angelinashop/fearures/home/home_cubit/categories_cubit/categories_cubit.dart';
@@ -38,155 +39,165 @@ class _HomeScreenBodyState extends State<HomeScreenBody> {
   Widget build(BuildContext context) {
     return Directionality(
       textDirection: TextDirection.rtl,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              CustomCarousel(
-                imageUrls: [
-                  // 'https://i.imgur.com/OnwEDW3.jpg',
-                  // 'https://farm3.staticflickr.com/2220/1572613671_7311098b76_z_d.jpg',
-                  // 'https://farm4.staticflickr.com/3075/3168662394_7d7103de7d_z_d.jpg',
-                  // 'https://farm9.staticflickr.com/8505/8441256181_4e98d8bff5_z_d.jpg',
-                  ImageApp.bannerPic,
-                  ImageApp.bannerPic2
-                ],
-              ),
-              SizedBox(height: 8.h),
-              CustomCategoryRow(
-                  title: "الاقسام",
-                  more: 'المزيد',
-                  titleStyle:
-                      TextStyles.k16.copyWith(fontWeight: FontWeight.w700),
-                  onPressed: () {}),
-              BlocBuilder<CategoriesCubit, CategoriesState>(
-                builder: (context, state) {
-                  if (state is CategoriesSuccessState) {
-                    final categories = state.data;
-                    return SizedBox(
-                      height: 120.h,
-                      child: ListView.separated(
-                        itemCount: categories.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return CustomCategoryItem(
-                            image: categories[index].image ??
-                                ImageApp.categoryImage,
-                            categoryName: categories[index].name ?? "No Name",
-                            onTap: () {
-                              context
-                                  .read<ProductsCubit>()
-                                  .getProduct(categoryId: categories[index].id);
-                            },
-                          );
-                        },
-                        separatorBuilder: (BuildContext context, int index) {
-                          return SizedBox(width: 15.w);
-                        },
-                      ),
-                    );
-                  } else if (state is CategoriesErrorState) {
-                    return Text(
-                      'Error loading categories:',
-                      style: TextStyle(color: Colors.red),
-                    );
-                  } else {
-                    return const CategoryListShimmer();
-                  }
-                },
-              ),
-              CustomCategoryRow(
-                title: 'احدث المنتجات',
-                more: 'المزيد',
-                titleStyle:
-                    TextStyles.k16.copyWith(fontWeight: FontWeight.w700),
-                onPressed: () {
-                  NavigationHelper.push(
-                      context: context, destination: AllProductsScreen());
-                },
-              ),
-              BlocBuilder<ProductsCubit, ProductsState>(
-                builder: (context, state) {
-                  if (state is ProductLoadingState) {
-                    return const ProductGridShimmer();
-                  } else if (state is ProductSuccessState) {
-                    final products = state.products;
-                    if (products.isEmpty) {
-                      return Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 50.h),
-                          child: Text(
-                            'لا توجد منتجات متاحة حالياً',
-                            style: TextStyles.k16
-                                .copyWith(fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      );
-                    }
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.symmetric(vertical: 5.w),
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisExtent: 350.h,
-                        crossAxisSpacing: 14.w,
-                        mainAxisSpacing: 12.h,
-                      ),
-                      itemCount: 10,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        final isDiscounted = product.isDiscounted;
-                        final discount = product.discountPercentage;
-                        return BlocBuilder<FavoriteCubit, FavoriteState>(
-                          builder: (context, favState) {
-                            final isFav = context
-                                .read<FavoriteCubit>()
-                                .isFavorite(product.id!);
-                            return CustomProductCard(
-                              imageUrl: product.images?.first.src ?? "",
-                              title: product.name ?? "No Name",
-                              price: product.price ?? "0.0",
-                              oldPrice: product.regularPrice ?? "0.0",
-                              subtitle:
-                                  product.categories?.first.name ?? "No Name",
-                              isDiscounted: isDiscounted,
-                              discountLabel:
-                                  isDiscounted ? '$discount%' : null,
-                              onIconPressed: () {
-                                context
-                                    .read<FavoriteCubit>()
-                                    .toggleFavorite(product);
-                              },
-                              icon: isFav
-                                  ? ImageApp.filledHeartIcon
-                                  : ImageApp.heartIcon,
+      child: RefreshIndicator(
+        color: ColorsApp.kPrimaryColor,
+        backgroundColor: Colors.white,
+        onRefresh: ()async{
+           context.read<CategoriesCubit>().getCategories();
+           context.read<ProductsCubit>().getProduct();
+        },
+        child: SingleChildScrollView(
+          // physics: const AlwaysScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CustomCarousel(
+                  imageUrls: [
+                    // 'https://i.imgur.com/OnwEDW3.jpg',
+                    // 'https://farm3.staticflickr.com/2220/1572613671_7311098b76_z_d.jpg',
+                    // 'https://farm4.staticflickr.com/3075/3168662394_7d7103de7d_z_d.jpg',
+                    // 'https://farm9.staticflickr.com/8505/8441256181_4e98d8bff5_z_d.jpg',
+                    ImageApp.bannerPic,
+                    ImageApp.bannerPic2
+                  ],
+                ),
+                SizedBox(height: 8.h),
+                CustomCategoryRow(
+                    title: "الاقسام",
+                    more: 'المزيد',
+                    titleStyle:
+                        TextStyles.k16.copyWith(fontWeight: FontWeight.w700),
+                    onPressed: () {}),
+                BlocBuilder<CategoriesCubit, CategoriesState>(
+                  builder: (context, state) {
+                    if (state is CategoriesSuccessState) {
+                      final categories = state.data;
+                      return SizedBox(
+                        height: 120.h,
+                        child: ListView.separated(
+                          itemCount: categories.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (BuildContext context, int index) {
+                            return CustomCategoryItem(
+                              image: categories[index].image ??
+                                  ImageApp.categoryImage,
+                              categoryName: categories[index].name ?? "No Name",
                               onTap: () {
-                                NavigationHelper.push(
-                                  context: context,
-                                  destination:
-                                      ProductDetailsScreen(model: product),
-                                );
+                                context
+                                    .read<ProductsCubit>()
+                                    .getProduct(categoryId: categories[index].id);
                               },
                             );
                           },
+                          separatorBuilder: (BuildContext context, int index) {
+                            return SizedBox(width: 15.w);
+                          },
+                        ),
+                      );
+                    } else if (state is CategoriesErrorState) {
+                      return Text(
+                        'Error loading categories:',
+                        style: TextStyle(color: Colors.red),
+                      );
+                    } else {
+                      return const CategoryListShimmer();
+                    }
+                  },
+                ),
+                CustomCategoryRow(
+                  title: 'احدث المنتجات',
+                  more: 'المزيد',
+                  titleStyle:
+                      TextStyles.k16.copyWith(fontWeight: FontWeight.w700),
+                  onPressed: () {
+                    NavigationHelper.push(
+                        context: context, destination: AllProductsScreen());
+                  },
+                ),
+                BlocBuilder<ProductsCubit, ProductsState>(
+                  builder: (context, state) {
+                    if (state is ProductLoadingState) {
+                      return const ProductGridShimmer();
+                    } else if (state is ProductSuccessState) {
+                      final products = state.products;
+                      if (products.isEmpty) {
+                        return Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 50.h),
+                            child: Text(
+                              'لا توجد منتجات متاحة حالياً',
+                              style: TextStyles.k16
+                                  .copyWith(fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         );
-                      },
-                    );
-                  } else if (state is ProductFailureState) {
-                    return Center(
-                      child: Text(
-                          'حدث خطأ أثناء تحميل المنتجات ${state.errorMessage}',
-                          style: TextStyle(color: Colors.red)),
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
-            ],
+                      }
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.symmetric(vertical: 5.w),
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisExtent: 350.h,
+                          crossAxisSpacing: 14.w,
+                          mainAxisSpacing: 12.h,
+                        ),
+                        itemCount: 10,
+                        itemBuilder: (context, index) {
+                          final product = products[index];
+                          final isDiscounted = product.isDiscounted;
+                          final discount = product.discountPercentage;
+                          return BlocBuilder<FavoriteCubit, FavoriteState>(
+                            builder: (context, favState) {
+                              final isFav = context
+                                  .read<FavoriteCubit>()
+                                  .isFavorite(product.id!);
+                              return CustomProductCard(
+                                imageUrl: product.images?.first.src ?? "",
+                                title: product.name ?? "No Name",
+                                price: product.price ?? "0.0",
+                                oldPrice: product.regularPrice ?? "0.0",
+                                subtitle:
+                                    product.categories?.first.name ?? "No Name",
+                                isDiscounted: isDiscounted,
+                                discountLabel:
+                                    isDiscounted ? '$discount%' : null,
+                                onIconPressed: () {
+                                  context
+                                      .read<FavoriteCubit>()
+                                      .toggleFavorite(product);
+                                },
+                                icon: isFav
+                                    ? ImageApp.filledHeartIcon
+                                    : ImageApp.heartIcon,
+                                onTap: () {
+                                  NavigationHelper.push(
+                                    context: context,
+                                    destination:
+                                        ProductDetailsScreen(model: product),
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    } else if (state is ProductFailureState) {
+                      return Center(
+                        child: Text(
+                            'حدث خطأ أثناء تحميل المنتجات ${state.errorMessage}',
+                            style: TextStyle(color: Colors.red)),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
